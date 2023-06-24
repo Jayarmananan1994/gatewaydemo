@@ -1,0 +1,25 @@
+downstream:
+  baseurl: http://httpbin.org
+
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: basic_get
+#          uri: ${downstream.baseurl:http://localhost:9090}
+#          predicates:
+#            - Path=/get
+#          filters:
+#            - AddRequestHeader=uuid,1234
+#        - id: path_example
+#          uri: ${downstream.baseurl:http://localhost:9090}
+#          predicates:
+#            - Path=/foo/{segment}
+#          filters:
+#            - RewritePath=/foo/(?<segment>.*),/segment/${segment}
+#        - id: astricks_example
+#          uri: ${downstream.baseurl:http://localhost:9090}
+#          predicates:
+#            - Path=/par/**
+#          filters:
+#            - RewritePath=/par/(?<suburl>.*),/api/par/${suburl}
