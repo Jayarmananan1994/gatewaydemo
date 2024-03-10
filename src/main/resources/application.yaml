@@ -1,0 +1,42 @@
+logging:
+  level:
+    reactor:
+      netty: INFO
+    org:
+      springframework:
+        cloud:
+          gateway: TRACE
+
+downstream:
+  baseurl: http://localhost:8081
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user_route
+          uri: ${downstream.baseurl:http://localhost:8081}
+          predicates:
+            - Path=/user-service/**
+          filters:
+            - RewritePath=/user-service/(?<subUrl>.*),/api/${subUrl}
+            - RemoveResponseHeader=X-Powered-By
+            - name: CircuitBreaker
+              args:
+                name: appCircuitBreaker
+                fallbackUri: forward:/demo-app/fallback
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      appCircuitBreaker:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 10
+        waitDurationInOpenState: 10s
+  timelimiter:
+    instances:
+      appCircuitBreaker:
+        timeoutDuration: 5s
+
+
