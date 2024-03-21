@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -46,6 +47,8 @@ class GateWayDemoApplicationTests {
                 return new MockResponse().setBodyDelay(2, TimeUnit.SECONDS).setBody(USER_LIST_JSON_RESPONSE);
             } else if (request.getPath().contains("/api/users?page=10")) {
                 return new MockResponse().setBodyDelay(10, TimeUnit.SECONDS).setBody(USER_LIST_JSON_RESPONSE);
+            } else if (request.getPath().contains("/api/special-users")) {
+                return new MockResponse().setBody(USER_LIST_JSON_RESPONSE);
             }
             return new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
         }
@@ -91,5 +94,34 @@ class GateWayDemoApplicationTests {
                 .json(USER_LIST_JSON_RESPONSE);
     }
 
+    @Test
+    void shouldRespondUnAuthorisedForInvalidAuthorisationHeader() {
+        webClient.get().uri("/special-user-service/users")
+                .header(HttpHeaders.AUTHORIZATION, "INVALID_HEADER")
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void shouldRespondUnAuthorisedRequestIfNoAuthorisationHeader() {
+        webClient.get().uri("/special-user-service/users")
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+    }
+
+    @Test
+    void shouldRespondOkRequestWhenValidBearerToken() {
+        webClient.get().uri("/special-user-service/users")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer "+generateValidToken())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .json(USER_LIST_JSON_RESPONSE);
+    }
+
+    private String generateValidToken() {
+        return new JwtUtil().generateToken("user1");
+    }
 
 }

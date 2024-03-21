@@ -11,6 +11,10 @@ downstream:
   baseurl: http://localhost:8081
 
 spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
   cloud:
     gateway:
       routes:
@@ -25,6 +29,15 @@ spring:
               args:
                 name: appCircuitBreaker
                 fallbackUri: forward:/demo-app/fallback
+        - id: protected-user-route
+          uri: ${downstream.baseurl:http://localhost:8081}
+          predicates:
+            - Path=/special-user-service/users
+          filters:
+            - name: UserAuthentication
+              args:
+                headerName: Authorization
+            - RewritePath=/special-user-service/users,/api/special-users
 
 resilience4j:
   circuitbreaker:
