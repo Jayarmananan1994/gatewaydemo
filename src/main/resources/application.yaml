@@ -37,6 +37,9 @@ spring:
             - name: UserAuthentication
               args:
                 headerName: Authorization
+            - name: RateLimiter
+              args:
+                statusCode: TOO_MANY_REQUESTS
             - RewritePath=/special-user-service/users,/api/special-users
 
 resilience4j:

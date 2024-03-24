@@ -111,17 +111,37 @@ class GateWayDemoApplicationTests {
     }
 
     @Test
-    void shouldRespondOkRequestWhenValidBearerToken() {
+    void shouldRespondOKWhenRequestWithValidBearerToken() {
         webClient.get().uri("/special-user-service/users")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer "+generateValidToken())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer "+generateValidToken("user1"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                 .json(USER_LIST_JSON_RESPONSE);
     }
 
-    private String generateValidToken() {
-        return new JwtUtil().generateToken("user1");
+    @Test
+    void shouldRespondWithRequestBalanceHeader() {
+        webClient.get().uri("/special-user-service/users")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer "+generateValidToken("user2"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().exists("X-Request-Balance")
+                .expectHeader().valueEquals("X-Request-Balance", "4")
+                .expectBody()
+                .json(USER_LIST_JSON_RESPONSE);
+    }
+
+    @Test
+    void shouldRespondWithTooManyRequestIfBalanceExceed() {
+        webClient.get().uri("/special-user-service/users")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer "+generateValidToken("user3"))
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    private String generateValidToken(String userName) {
+        return new JwtUtil().generateToken(userName);
     }
 
 }

@@ -6,4 +6,4 @@ INSERT INTO app_user (username, usr_password) VALUES
 INSERT INTO user_request_rate (user_id, count) VALUES
 (1, 10),
 (2, 5),
-(3, 8);
+(3, 0);

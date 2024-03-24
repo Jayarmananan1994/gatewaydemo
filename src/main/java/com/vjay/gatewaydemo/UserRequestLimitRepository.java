@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<AppUser, Long> {
+public interface UserRequestLimitRepository extends JpaRepository<UserRequestRate, Long> {
 
-    Optional<AppUser> findByUsername(String userName);
+    Optional<UserRequestRate> findByUser(AppUser user);
 }

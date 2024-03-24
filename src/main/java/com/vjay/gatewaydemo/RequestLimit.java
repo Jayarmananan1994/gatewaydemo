@@ -1,31 +1,30 @@
 package com.vjay.gatewaydemo;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Table(name = "user_request_rate")
+@Table(name = "request_limit")
 @Getter
-public class UserRequestRate {
+@Setter
+public class RequestLimit {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private AppUser user;
+    @OneToOne
+    @JoinColumn(name = "app_user_id")
+    private AppUser appUser;
 
-    @Column(nullable = false)
-    private int count;
+    private int requestCount;
 
-    public void setCount(int count) {
-        this.count = count;
-    }
+
 }

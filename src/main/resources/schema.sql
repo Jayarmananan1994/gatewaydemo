@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS app_user (
 );
 
 CREATE TABLE IF NOT EXISTS user_request_rate (
+    id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     count INT NOT NULL DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES app_user(id)
